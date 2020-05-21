@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 	"time"
@@ -36,7 +37,7 @@ func main() {
 		if strings.HasSuffix(f.Name(), ".db") {
 			continue // Ignore it
 		}
-		path := fmt.Sprintf("%s%s", ROAM_DIR, f.Name())
+		path := path.Join(ROAM_DIR, f.Name())
 		record, err := NewRecord(path)
 		if err != nil {
 			if err == ErrIsDir {
