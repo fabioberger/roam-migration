@@ -20,11 +20,11 @@ const MAX_BULLET_NESTING = 20 // The max number of indents we will properly conv
 var ErrIsDir = errors.New("is directory")
 
 func main() {
-	ROAM_DIR_PTR := flag.String("d", "", "Directory containing your Roam Research export")
+	ROAM_DIR_PTR := flag.String("p", "", "Path to directory containing your Roam Research export")
 	flag.Parse()
 	ROAM_DIR := *ROAM_DIR_PTR
 	if ROAM_DIR == "" {
-		log.Fatalf("Please make sure you use the -d flag to specify the directory containing your Roam Research exported files")
+		log.Fatalf("Please make sure you use the -p flag to specify the path to the directory containing your Roam Research exported files")
 	}
 
 	files, err := ioutil.ReadDir(ROAM_DIR)
