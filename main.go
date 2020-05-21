@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -13,11 +12,8 @@ import (
 	"time"
 )
 
-// TODO(fabio): Recursively enter directories. If Roam Research title has slash, it exports as dir with file.
-
 const TITLE_PREFIX = "#+TITLE:"
 const MAX_BULLET_NESTING = 20 // The max number of indents we will properly convert
-var ErrIsDir = errors.New("is directory")
 
 func main() {
 	ROAM_DIR_PTR := flag.String("p", "", "Path to directory containing your Roam Research export")
@@ -26,29 +22,41 @@ func main() {
 	if ROAM_DIR == "" {
 		log.Fatalf("Please make sure you use the -p flag to specify the path to the directory containing your Roam Research exported files")
 	}
-
-	files, err := ioutil.ReadDir(ROAM_DIR)
+	err := recursivelyConvertFiles(ROAM_DIR)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Conversion complete!")
+}
+
+func recursivelyConvertFiles(directory string) error {
+	files, err := ioutil.ReadDir(directory)
+	if err != nil {
+		return err
+	}
 	for _, f := range files {
-		fmt.Println(f.Name())
-		if strings.HasSuffix(f.Name(), ".db") {
+		fileName := f.Name()
+		filePath := path.Join(directory, fileName)
+		if f.IsDir() {
+			if err := recursivelyConvertFiles(filePath); err != nil {
+				return err
+			}
+		}
+		if !strings.HasSuffix(fileName, ".md") && !strings.HasSuffix(fileName, ".org") {
 			continue // Ignore it
 		}
-		path := path.Join(ROAM_DIR, f.Name())
-		record, err := NewRecord(path)
+		record, err := NewRecord(filePath)
 		if err != nil {
 			if err == ErrIsDir {
 				continue
 			}
-			log.Fatal(err)
+			return err
 		}
 		if !record.HasTitle() {
-			title := fmt.Sprintf("%s %s\n", TITLE_PREFIX, f.Name()[:len(f.Name())-3])
+			title := fmt.Sprintf("%s %s\n", TITLE_PREFIX, fileName[:len(fileName)-3])
 			record.Prepend(title)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		}
 		record.FixBidirectionalLinks()
@@ -59,33 +67,37 @@ func main() {
 		record.RemoveRoamStyling()
 		record.UnderscoreLinkedFileNames(names)
 		record.ConvertHashTagsToBidirectionalLinks()
-		record.Save()
+		err = record.Save()
+		if err != nil {
+			return err
+		}
 
 		// Rename file to underscore version and change suffix to .org
-		oldPath := path
-		newPath := strings.ReplaceAll(strings.Replace(path, ".md", ".org", 1), " ", "_")
+		dir, file := path.Split(filePath)
+		oldPath := filePath
+		newFile := strings.ReplaceAll(strings.Replace(file, ".md", ".org", 1), " ", "_")
+		newPath := path.Join(dir, newFile)
 		err = os.Rename(oldPath, newPath)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
+		fmt.Println("Processed: ", fileName)
 	}
+	return nil
 }
 
 type Record struct {
-	Filename string
+	Path     string
 	Contents string
 }
 
-func NewRecord(filename string) (*Record, error) {
-	if stat, err := os.Stat(filename); err == nil && stat.IsDir() {
-		return nil, ErrIsDir
-	}
-	content, err := ioutil.ReadFile(filename)
+func NewRecord(path string) (*Record, error) {
+	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 	return &Record{
-		Filename: filename,
+		Path:     path,
 		Contents: string(content),
 	}, nil
 }
@@ -228,11 +240,17 @@ func (r *Record) UnderscoreLinkedFileNames(names []string) {
 	}
 }
 
-func (r *Record) Save() {
-	err := ioutil.WriteFile(r.Filename, []byte(r.Contents), 0644)
+func (r *Record) Save() error {
+	pathToDir := path.Dir(r.Path)
+	err := os.MkdirAll(pathToDir, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	err = ioutil.WriteFile(r.Path, []byte(r.Contents), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *Record) HasTitle() bool {
