@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-// TODO(fabio): Use path lib to concat dir path to file name so it doesn't matter if  ends with / or not.
 // TODO(fabio): Recursively enter directories. If Roam Research title has slash, it exports as dir with file.
 
 const TITLE_PREFIX = "#+TITLE:"
