@@ -47,9 +47,6 @@ func recursivelyConvertFiles(directory string) error {
 		}
 		record, err := NewRecord(filePath)
 		if err != nil {
-			if err == ErrIsDir {
-				continue
-			}
 			return err
 		}
 		if !record.HasTitle() {
