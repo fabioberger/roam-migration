@@ -14,9 +14,11 @@ Download the relevant one for your system (e.g., darwin_amd64 for most MacOS use
 
 Building from source requires you to have [Golang](https://golang.org/) installed on your OS.
 
-1. Clone this repo
-2. Run `go build` 
-3. You should see a binary called `roam-migration` in the project's root directory.
+```
+$ go get github.com/fabioberger/roam-migration
+```
+
+You should now have a CLI tool available called `roam-migration`
 
 ## Usage
 
@@ -25,15 +27,17 @@ First, go to Roam Research and click the three dots (`...`) in the top right cor
 Then run the following:
 
 ```
-/path/to/roam-migration-binary -p /path/to/roam-research-export
+$ roam-migration -p /path/to/roam-research-export
 ```
 
-Replace the respective `/path/to` paths with where the `roam-migration` binary and roam-research export directory were saved on your machine.
+Replace the `/path/to` with where the roam-research export directory was saved on your machine.
 
-As an example, if you downloaded the pre-built binary on a Mac, it might look something like this:
+If you downloaded a pre-built binary, you additionally need to replace `roam-migration`, with the path the the downloaded binary. 
+
+For example, if you downloaded the pre-built binary on a Mac, it might look something like this:
 
 ```
-~/Downloads/roam-migration_darwin_amd64 -p ~/Downloads/Roam-Export-1590095488816
+$ ~/Downloads/roam-migration_darwin_amd64 -p ~/Downloads/Roam-Export-1590095488816
 ```
 
 Happy hacking! If you run into any unexpected errors, please open an [issue](https://github.com/fabioberger/roam-migration/issues/new). 
