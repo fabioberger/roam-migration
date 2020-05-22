@@ -30,9 +30,9 @@ Then run the following:
 $ roam-migration -p /path/to/roam-research-export
 ```
 
-Replace the `/path/to` with where the roam-research export directory was saved on your machine.
+Replace the `/path/to/roam-research-export` with the path to where the Roam export directory was saved on your machine.
 
-If you downloaded a pre-built binary, you additionally need to replace `roam-migration`, with the path the the downloaded binary. 
+If you downloaded a pre-built binary, you additionally need to replace `roam-migration`, with to path the the downloaded binary. 
 
 For example, if you downloaded the pre-built binary on a Mac, it might look something like this:
 
