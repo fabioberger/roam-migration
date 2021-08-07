@@ -22,15 +22,15 @@ You should now have a CLI tool available called `roam-migration`
 
 ## Usage
 
-First, go to Roam Research and click the three dots (`...`) in the top right corner and click "Export All". This will download a zip to your computer. Unzip this file by double clicking it. This will create a folder containing your Roam notes.
+First, go to Roam Research and click the three dots (`...`) in the top right corner and click "Export All" and choose **Markdown**. This will download a zip to your computer. Unzip this file by double clicking it. This will create a folder containing your Roam notes.
 
 Then run the following:
 
 ```
-$ roam-migration -p /path/to/roam-research-export
+$ roam-migration -p /path/to/roam-research-export-folder
 ```
 
-Replace the `/path/to/roam-research-export` with the path to where the Roam export directory was saved on your machine.
+Replace the `/path/to/roam-research-export-folder` with the path to where the Roam export directory was saved on your machine.
 
 If you downloaded a pre-built binary, you additionally need to replace `roam-migration`, with to path the the downloaded binary. 
 
